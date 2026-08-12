@@ -1,0 +1,32 @@
+# Assignment/reference files
+assignment/*.docx
+AGENTS.md
+
+# Generated redacted documents
+output/*.docx
+
+# Private evaluation data
+evaluation/private_*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+backend/.venv/
+.pytest_cache/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
