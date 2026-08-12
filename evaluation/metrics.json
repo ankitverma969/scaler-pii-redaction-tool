@@ -1,0 +1,319 @@
+{
+  "real_rhp_evaluation": {
+    "kind": "real_rhp",
+    "metadata": {
+      "detector_source_fingerprint_sha256": "40426f33ccd1824ec66fa3bc9503fdb7b7334b5f5b7f85fb4ac30f7af7235133",
+      "matching_policy": "strict exact [start,end) span plus exact PII type",
+      "python_version": "3.11.9",
+      "sample_size": 150,
+      "sampling_seed": 42,
+      "source_type_distribution": {
+        "BODY": 68,
+        "TABLE": 82
+      },
+      "spacy_model": "en_core_web_sm",
+      "spacy_version": "3.8.14",
+      "timestamp_utc": "2026-08-12T23:10:44.888612+00:00"
+    },
+    "metrics": {
+      "candidate_accuracy": {
+        "accuracy": 0.9068825910931174,
+        "fn": 14,
+        "fp": 9,
+        "hard_negative_candidates": 156,
+        "positive_candidates": 91,
+        "tn": 147,
+        "tp": 77
+      },
+      "error_summary": {
+        "boundary_errors": 7,
+        "missed_semantic_entities": 12,
+        "missed_structured_entities": 2,
+        "semantic_false_positives": 13,
+        "structured_false_positives": 0,
+        "wrong_type_errors": 0
+      },
+      "hard_negative_counts": {
+        "CIN": 2,
+        "DIN": 1,
+        "FINANCIAL_VALUE": 25,
+        "GENERIC_HEADING": 38,
+        "ORDINARY_DATE": 26,
+        "PAGE_NUMBER": 10,
+        "REGULATION_REFERENCE": 2,
+        "REGULATOR": 19,
+        "SEBI_ID": 1,
+        "SECTION_REFERENCE": 2,
+        "STANDALONE_LOCATION": 21,
+        "URL": 9
+      },
+      "micro": {
+        "f1": 0.8191489361702127,
+        "fn": 14,
+        "fp": 20,
+        "precision": 0.7938144329896907,
+        "recall": 0.8461538461538461,
+        "tp": 77
+      },
+      "per_type": {
+        "ADDRESS": {
+          "f1": 0.18181818181818182,
+          "fn": 2,
+          "fp": 7,
+          "gold": 3,
+          "precision": 0.125,
+          "predicted": 8,
+          "recall": 0.3333333333333333,
+          "tp": 1
+        },
+        "COMPANY": {
+          "f1": 0.8524590163934426,
+          "fn": 5,
+          "fp": 4,
+          "gold": 31,
+          "precision": 0.8666666666666667,
+          "predicted": 30,
+          "recall": 0.8387096774193549,
+          "tp": 26
+        },
+        "CREDIT_CARD": {
+          "f1": null,
+          "fn": 0,
+          "fp": 0,
+          "gold": 0,
+          "precision": null,
+          "predicted": 0,
+          "recall": null,
+          "tp": 0
+        },
+        "DOB": {
+          "f1": null,
+          "fn": 0,
+          "fp": 0,
+          "gold": 0,
+          "precision": null,
+          "predicted": 0,
+          "recall": null,
+          "tp": 0
+        },
+        "EMAIL": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 16,
+          "precision": 1.0,
+          "predicted": 16,
+          "recall": 1.0,
+          "tp": 16
+        },
+        "IP_ADDRESS": {
+          "f1": null,
+          "fn": 0,
+          "fp": 0,
+          "gold": 0,
+          "precision": null,
+          "predicted": 0,
+          "recall": null,
+          "tp": 0
+        },
+        "PERSON": {
+          "f1": 0.8181818181818182,
+          "fn": 5,
+          "fp": 7,
+          "gold": 32,
+          "precision": 0.7941176470588235,
+          "predicted": 34,
+          "recall": 0.84375,
+          "tp": 27
+        },
+        "PHONE": {
+          "f1": 0.7777777777777778,
+          "fn": 2,
+          "fp": 2,
+          "gold": 9,
+          "precision": 0.7777777777777778,
+          "predicted": 9,
+          "recall": 0.7777777777777778,
+          "tp": 7
+        },
+        "SSN": {
+          "f1": null,
+          "fn": 0,
+          "fp": 0,
+          "gold": 0,
+          "precision": null,
+          "predicted": 0,
+          "recall": null,
+          "tp": 0
+        }
+      }
+    },
+    "sample": {
+      "blocks_with_no_positive_pii": 97,
+      "blocks_with_positive_pii": 53,
+      "hard_negative_candidate_count": 156,
+      "positive_annotation_count": 91,
+      "source_type_distribution": {
+        "BODY": 68,
+        "TABLE": 82
+      },
+      "total_blocks": 150
+    }
+  },
+  "synthetic_capability_evaluation": {
+    "kind": "synthetic_capability",
+    "metadata": {
+      "detector_source_fingerprint_sha256": "40426f33ccd1824ec66fa3bc9503fdb7b7334b5f5b7f85fb4ac30f7af7235133",
+      "matching_policy": "strict exact [start,end) span plus exact PII type",
+      "python_version": "3.11.9",
+      "sample_size": 20,
+      "sampling_seed": null,
+      "source_type_distribution": {},
+      "spacy_model": "en_core_web_sm",
+      "spacy_version": "3.8.14",
+      "timestamp_utc": "2026-08-12T23:10:45.037663+00:00"
+    },
+    "metrics": {
+      "candidate_accuracy": {
+        "accuracy": 0.9130434782608695,
+        "fn": 5,
+        "fp": 3,
+        "hard_negative_candidates": 36,
+        "positive_candidates": 56,
+        "tn": 33,
+        "tp": 51
+      },
+      "error_summary": {
+        "boundary_errors": 2,
+        "missed_semantic_entities": 4,
+        "missed_structured_entities": 1,
+        "semantic_false_positives": 0,
+        "structured_false_positives": 0,
+        "wrong_type_errors": 0
+      },
+      "hard_negative_counts": {
+        "COMMITTEE": 2,
+        "DIN": 1,
+        "FINANCIAL_VALUE": 2,
+        "GENERIC_HEADING": 1,
+        "INVALID_CREDIT_CARD": 2,
+        "INVALID_IP": 4,
+        "INVALID_SSN": 5,
+        "MALFORMED_EMAIL": 5,
+        "ORDINARY_DATE": 4,
+        "OTHER_CORPORATE_IDENTIFIER": 1,
+        "PIN_ONLY": 1,
+        "REGULATOR": 1,
+        "ROLE_TITLE": 2,
+        "SEBI_ID": 1,
+        "SHARE_COUNT": 2,
+        "STANDALONE_LOCATION": 2
+      },
+      "micro": {
+        "f1": 0.9357798165137615,
+        "fn": 5,
+        "fp": 2,
+        "precision": 0.9622641509433962,
+        "recall": 0.9107142857142857,
+        "tp": 51
+      },
+      "per_type": {
+        "ADDRESS": {
+          "f1": 0.4,
+          "fn": 4,
+          "fp": 2,
+          "gold": 6,
+          "precision": 0.5,
+          "predicted": 4,
+          "recall": 0.3333333333333333,
+          "tp": 2
+        },
+        "COMPANY": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 7,
+          "precision": 1.0,
+          "predicted": 7,
+          "recall": 1.0,
+          "tp": 7
+        },
+        "CREDIT_CARD": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 6,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 1.0,
+          "tp": 6
+        },
+        "DOB": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 6,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 1.0,
+          "tp": 6
+        },
+        "EMAIL": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 6,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 1.0,
+          "tp": 6
+        },
+        "IP_ADDRESS": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 6,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 1.0,
+          "tp": 6
+        },
+        "PERSON": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 6,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 1.0,
+          "tp": 6
+        },
+        "PHONE": {
+          "f1": 0.923076923076923,
+          "fn": 1,
+          "fp": 0,
+          "gold": 7,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 0.8571428571428571,
+          "tp": 6
+        },
+        "SSN": {
+          "f1": 1.0,
+          "fn": 0,
+          "fp": 0,
+          "gold": 6,
+          "precision": 1.0,
+          "predicted": 6,
+          "recall": 1.0,
+          "tp": 6
+        }
+      }
+    },
+    "sample": {
+      "hard_negative_candidate_count": 36,
+      "positive_annotation_count": 56,
+      "total_cases": 20
+    }
+  }
+}
