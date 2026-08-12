@@ -66,6 +66,12 @@ def test_email_detector_rejects_malformed_addresses() -> None:
     assert EmailDetector().detect(text) == []
 
 
+def test_email_detector_rejects_embedded_identifier_substrings() -> None:
+    text = "Tokens: _john@example.com_ prefix-jane@example.org+suffix"
+
+    assert EmailDetector().detect(text) == []
+
+
 def test_phone_detector_positive_cases() -> None:
     text = (
         "Mobile +91 9876543210; backup 9876543210; spaced +91 98765 43210; "
@@ -166,6 +172,12 @@ def test_ip_detector_ipv4_positive_and_negative_cases() -> None:
     assert IPAddressDetector().detect("U192.0.2.1TEST") == []
 
 
+def test_ip_detector_rejects_financial_decimal_sequences() -> None:
+    text = "Amounts: 7.100.00 million, ratio 1.2.3, and code v1.2.3.4x."
+
+    assert IPAddressDetector().detect(text) == []
+
+
 def test_dob_detector_contextual_positive_cases() -> None:
     text = (
         "DOB: 12/04/1990. Date of Birth: 12-04-1990. "
@@ -240,6 +252,27 @@ def test_structured_detector_hard_negative_block() -> None:
     entities = StructuredPIIDetector().detect(text)
 
     assert [entity.pii_type for entity in entities] == []
+
+
+def test_structured_detector_concentrated_corporate_false_positive_corpus() -> None:
+    text = (
+        "CIN: U28129PN1979PLC141032\n"
+        "CIN: L12345MH2000PLC123456\n"
+        "DIN: 00135070\n"
+        "SEBI Registration: INM000013004\n"
+        "SEBI: INR000004058\n"
+        "SEBI: INZ000166136\n"
+        "INR 7,100.00 million\n"
+        "26,437,554 shares\n"
+        "47.00%\n"
+        "PIN 411045\n"
+        "March 31, 2025\n"
+        "Section 32\n"
+        "Regulation 6(1)\n"
+        "Page 123\n"
+    )
+
+    assert StructuredPIIDetector().detect(text) == []
 
 
 def test_cross_run_email_detection_maps_back_to_runs() -> None:

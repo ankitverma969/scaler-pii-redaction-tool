@@ -50,6 +50,7 @@ function UploadZone({ disabled, onFileSelected }) {
         id="docx-upload"
         className="sr-only"
         type="file"
+        aria-label="DOCX file"
         accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         onChange={handleInputChange}
         disabled={disabled}

@@ -19,6 +19,10 @@ def block_from_document(document: Document):
     return next(block for block in iter_text_blocks(document) if block.text)
 
 
+def block_with_text(document: Document, expected: str):
+    return next(block for block in iter_text_blocks(document) if block.text == expected)
+
+
 def plan(
     text: str,
     value: str,
@@ -187,6 +191,35 @@ def test_entity_split_across_runs_replaced_once() -> None:
         "",
         "",
     ]
+
+
+def test_replacements_apply_in_table_header_and_footer_blocks() -> None:
+    document = Document()
+    table = document.add_table(rows=1, cols=1)
+    table.cell(0, 0).text = "Table Email: table@example.com"
+    document.sections[0].header.paragraphs[0].text = "Header Phone: +91 98765 43210"
+    document.sections[0].footer.paragraphs[0].text = "Footer DOB: 12/04/1990"
+
+    table_block = block_with_text(document, "Table Email: table@example.com")
+    header_block = block_with_text(document, "Header Phone: +91 98765 43210")
+    footer_block = block_with_text(document, "Footer DOB: 12/04/1990")
+
+    assert apply_replacements_to_block(
+        table_block,
+        [plan(table_block.text, "table@example.com", "safe@example.com", PIIType.EMAIL)],
+    ) == 1
+    assert apply_replacements_to_block(
+        header_block,
+        [plan(header_block.text, "+91 98765 43210", "+91 90000 11111", PIIType.PHONE)],
+    ) == 1
+    assert apply_replacements_to_block(
+        footer_block,
+        [plan(footer_block.text, "12/04/1990", "14/05/1988", PIIType.DOB)],
+    ) == 1
+
+    assert table.cell(0, 0).text == "Table Email: safe@example.com"
+    assert document.sections[0].header.paragraphs[0].text == "Header Phone: +91 90000 11111"
+    assert document.sections[0].footer.paragraphs[0].text == "Footer DOB: 14/05/1988"
 
 
 def test_replacement_longer_shorter_and_adjacent_entities() -> None:

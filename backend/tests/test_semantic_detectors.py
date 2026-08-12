@@ -72,6 +72,14 @@ def test_person_context_positive_cases_and_exact_spans() -> None:
     ]
 
 
+def test_person_context_handles_uppercase_names_without_role_text() -> None:
+    text = "Contact Person: RAHUL MEHTA\nBoard Committee: RISK MANAGEMENT COMMITTEE"
+
+    entities = PersonDetector().detect(text)
+
+    assert [entity.text for entity in entities] == ["RAHUL MEHTA"]
+
+
 def test_person_role_titles_are_not_included() -> None:
     text = "Contact Person: Rahul Mehta, Company Secretary"
 
@@ -86,6 +94,15 @@ def test_person_negative_domain_phrases() -> None:
     text = (
         "Board of Directors. General Information. Book Running Lead Managers. "
         "Risk Management Committee. Corporate Governance. Qualified Institutional Buyers."
+    )
+
+    assert PersonDetector().detect(text) == []
+
+
+def test_person_negative_financial_and_governance_headings() -> None:
+    text = (
+        "Financial Statements. Independent Auditor Report. "
+        "Corporate Social Responsibility Committee. Material Contracts."
     )
 
     assert PersonDetector().detect(text) == []
@@ -121,6 +138,15 @@ def test_company_negative_regulators_and_committees() -> None:
         "Board of Directors. Audit Committee. Government of India. "
         "Registrar of Companies. Companies Act. SEBI ICDR Regulations. "
         "Risk Management Committee."
+    )
+
+    assert CompanyDetector().detect(text) == []
+
+
+def test_company_rejects_act_and_regulation_phrases_with_company_words() -> None:
+    text = (
+        "Companies Act, 2013. Securities Contracts Regulation Act. "
+        "The company law committee reviewed the draft."
     )
 
     assert CompanyDetector().detect(text) == []
@@ -177,6 +203,24 @@ def test_address_phone_email_mixed_block_keeps_semantic_separate() -> None:
 
     assert Counter(types(semantic_entities)) == {PIIType.ADDRESS: 1}
     assert Counter(types(structured_entities)) == {PIIType.PHONE: 1, PIIType.EMAIL: 1}
+
+
+def test_address_context_stops_before_email_phone_and_website() -> None:
+    text = (
+        "Corporate Office: 801-804, Wing A, Building No. 3, Inspire Business Complex, "
+        "Bandra East, Mumbai - 400 051, Maharashtra, India; Email: office@example.com; "
+        "Phone: +91 22 4444 1111; Website: www.example.com"
+    )
+
+    entities = AddressDetector().detect(text)
+
+    assert [entity.text for entity in entities] == [
+        "801-804, Wing A, Building No. 3, Inspire Business Complex, "
+        "Bandra East, Mumbai - 400 051, Maharashtra, India"
+    ]
+    assert "office@example.com" not in entities[0].text
+    assert "+91" not in entities[0].text
+    assert "Website" not in entities[0].text
 
 
 def test_semantic_detector_smoke_with_structured_detector() -> None:

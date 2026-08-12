@@ -70,6 +70,23 @@ def test_span_crossing_runs_maps_to_all_affected_runs() -> None:
     ]
 
 
+def test_span_starting_and_ending_on_run_boundaries() -> None:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("AB")
+    paragraph.add_run("CD")
+    paragraph.add_run("EFGH")
+    paragraph.add_run("IJ")
+
+    block = non_empty_blocks(document)[0]
+    slices = block.runs_for_span(2, 8)
+
+    assert [(s.run_index, s.start, s.end, s.start_in_run, s.end_in_run) for s in slices] == [
+        (1, 2, 4, 0, 2),
+        (2, 4, 8, 0, 4),
+    ]
+
+
 def test_partial_span_inside_single_run() -> None:
     document = Document()
     document.add_paragraph("Hello world")

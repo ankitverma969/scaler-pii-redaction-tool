@@ -79,6 +79,26 @@ def test_different_people_prefer_distinct_replacements() -> None:
     assert first != second
 
 
+def test_replacement_generation_retries_when_canonical_values_collide() -> None:
+    class CollidingGenerators:
+        def generate_canonical(self, pii_type, original_text, normalized_original, retry=0):
+            if retry < 2:
+                return "Same Person"
+            return f"Unique Person {retry}"
+
+        def render(self, pii_type, original_text, canonical):
+            return canonical
+
+    manager = ReplacementManager(seed=42)
+    manager._generators = CollidingGenerators()
+
+    first = manager.get_replacement(standalone("Rahul Mehta", PIIType.PERSON))
+    second = manager.get_replacement(standalone("Priya Shah", PIIType.PERSON))
+
+    assert first == "Same Person"
+    assert second == "Unique Person 2"
+
+
 def test_company_replacement_preserves_suffix_and_case() -> None:
     manager = ReplacementManager(seed=42)
     private = manager.get_replacement(standalone("Aurora Systems Private Limited", PIIType.COMPANY))

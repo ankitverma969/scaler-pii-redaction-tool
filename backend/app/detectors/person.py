@@ -72,6 +72,10 @@ class PersonDetector:
             if line_break != -1:
                 tail = tail[:line_break]
                 tail_end = tail_start + len(tail)
+            sentence_break = re.search(r";|(?<!\b[A-Z])\.(?:\s|$)", tail)
+            if sentence_break:
+                tail = tail[: sentence_break.start()]
+                tail_end = tail_start + len(tail)
             stop_match = ROLE_STOP_PATTERN.search(tail, 1)
             if stop_match:
                 tail = tail[: stop_match.start()]

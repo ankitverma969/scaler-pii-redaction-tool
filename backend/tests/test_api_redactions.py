@@ -83,6 +83,7 @@ def test_valid_upload_status_download_and_delete(tmp_path: Path) -> None:
         assert completed["total_entities"] == 1
         assert set(completed["counts"]) == set(empty_counts())
         assert completed["counts"]["EMAIL"] == 1
+        assert completed["total_entities"] == sum(completed["counts"].values())
         assert completed["download_available"] is True
         assert secret not in str(completed)
 
@@ -182,6 +183,7 @@ def test_engine_failure_is_safe_and_not_downloadable(tmp_path: Path) -> None:
             "message": "The document could not be processed.",
         }
         assert "private.person@example.com" not in str(failed)
+        assert str(manager.temp_root) not in str(failed)
         assert client.get(f"/api/redactions/{job_id}/download").status_code == 409
         internal_job = manager._internal_job(job_id)
         assert not internal_job.input_path.exists()
@@ -274,6 +276,10 @@ def test_filename_sanitization_and_job_isolation(tmp_path: Path) -> None:
         first_download = client.get(f"/api/redactions/{first}/download").content
         second_download = client.get(f"/api/redactions/{second}/download").content
         assert first_download != second_download
+        assert client.delete(f"/api/redactions/{first}").status_code == 200
+        assert client.get(f"/api/redactions/{first}").status_code == 404
+        assert client.get(f"/api/redactions/{second}").status_code == 200
+        assert client.get(f"/api/redactions/{second}/download").status_code == 200
 
 
 def test_seed_determinism_for_api_jobs(tmp_path: Path) -> None:
