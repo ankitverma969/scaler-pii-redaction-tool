@@ -154,11 +154,11 @@ def _iter_table_blocks(
     source_type: SourceType,
     parent_location: dict[str, Any],
 ) -> Iterator[TextBlock]:
-    seen_cells: set[int] = set()
+    seen_cells: set[object] = set()
 
     for row_index, row in enumerate(table.rows):
         for column_index, cell in enumerate(row.cells):
-            cell_identity = id(cell._tc)
+            cell_identity = cell._tc
             if cell_identity in seen_cells:
                 continue
             seen_cells.add(cell_identity)
@@ -234,10 +234,10 @@ def _count_all_tables(document: DocxDocument) -> dict[str, int]:
 
     def count_table(table: Table, is_nested: bool) -> None:
         nonlocal total, nested
-        seen_cells: set[int] = set()
+        seen_cells: set[object] = set()
         for row in table.rows:
             for cell in row.cells:
-                cell_identity = id(cell._tc)
+                cell_identity = cell._tc
                 if cell_identity in seen_cells:
                     continue
                 seen_cells.add(cell_identity)
