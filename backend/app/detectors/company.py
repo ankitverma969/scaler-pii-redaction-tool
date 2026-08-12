@@ -8,8 +8,9 @@ from app.models.entities import DetectedEntity, PIIType
 
 
 LEGAL_SUFFIX_PATTERN = (
-    r"(?:Private\s+Limited|Pvt\.?\s+Ltd\.?|Limited|Ltd\.?|LLP|L\.L\.P\.)"
+    r"(?i:(?:Private\s+Limited|Pvt\.?\s+Ltd\.?|Limited|Ltd\.?|LLP|L\.L\.P\.))"
 )
+COMPANY_WORD_PATTERN = r"(?:[A-Z][A-Za-z&'()-]*|of|and|the|for|in|&)"
 
 
 class CompanyDetector:
@@ -17,7 +18,8 @@ class CompanyDetector:
         r"\b(?!Private\b|Pvt\b|Ltd\b|Limited\b|LLP\b|L\.L\.P\b)"
         r"[A-Z][A-Za-z&'()-]*"
         r"(?:\s+(?!Private\b|Pvt\b|Ltd\b|Limited\b|LLP\b|L\.L\.P\b)"
-        r"[A-Z][A-Za-z&'()-]*){0,8}\s+"
+        + COMPANY_WORD_PATTERN
+        + r"){0,10}\s+"
         + LEGAL_SUFFIX_PATTERN
         + r"\b",
     )

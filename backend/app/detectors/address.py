@@ -22,9 +22,9 @@ class AddressDetector:
     )
     _pin_pattern = re.compile(r"\b[1-9]\d{2}\s?\d{3}\b")
     _street_tokens = re.compile(
-        r"\b(?:Flat|Plot|Building|Tower|Floor|Wing|House|Apartment|Office|Block|"
+        r"\b(?:Flat|Plot|Building|Tower|Floor|Wing|House|Apartment|Office\s+No|Block|"
         r"Unit|Room|Road|Rd|Street|Lane|Marg|Nagar|Colony|Complex|Industrial\s+Area|"
-        r"Business\s+Centre|Village|Taluka|District|Sector|Phase|Near|Opposite|Behind)\b",
+        r"Business\s+Centre|Village|Taluka|District|Phase)\b",
         re.IGNORECASE,
     )
     _location_tokens = re.compile(
@@ -57,7 +57,7 @@ class AddressDetector:
                 continue
             candidate = text[start:end]
             score = self._score(candidate, has_label=True)
-            if score >= 3:
+            if score >= 3 and self._has_address_evidence(candidate):
                 entities.append(
                     DetectedEntity(
                         text=candidate,
@@ -74,7 +74,7 @@ class AddressDetector:
         candidate_end = self._candidate_end(text, 0)
         stripped_start, stripped_end = trim_span(text, 0, candidate_end)
         candidate = text[stripped_start:stripped_end]
-        if self._score(candidate, has_label=False) >= 4:
+        if self._score(candidate, has_label=False) >= 4 and self._has_address_evidence(candidate):
             return [
                 DetectedEntity(
                     text=candidate,
@@ -102,7 +102,7 @@ class AddressDetector:
         score = 2 if has_label else 0
         if self._street_tokens.search(candidate):
             score += 2
-        if self._pin_pattern.search(candidate):
+        if self._has_pin(candidate):
             score += 2
         if self._location_tokens.search(candidate):
             score += 1
@@ -113,6 +113,33 @@ class AddressDetector:
         if len(candidate.split()) >= 6:
             score += 1
         return score
+
+    def _has_address_evidence(self, candidate: str) -> bool:
+        if self._has_pin(candidate):
+            return bool(
+                self._street_tokens.search(candidate)
+                or self._location_tokens.search(candidate)
+                or candidate.count(",") >= 2
+            )
+        if len(candidate.split()) > 15:
+            return False
+        if self._street_tokens.search(candidate) and self._location_tokens.search(candidate):
+            return True
+        return bool(
+            re.search(r"\d", candidate)
+            and candidate.count(",") >= 2
+            and self._location_tokens.search(candidate)
+        )
+
+    def _has_pin(self, candidate: str) -> bool:
+        for match in self._pin_pattern.finditer(candidate):
+            if match.start() >= 2 and candidate[match.start() - 1] == "-":
+                if candidate[match.start() - 2].isalpha():
+                    continue
+            if match.start() >= 1 and candidate[match.start() - 1].isalpha():
+                continue
+            return True
+        return False
 
 
 def _dedupe_and_sort(entities: list[DetectedEntity]) -> list[DetectedEntity]:

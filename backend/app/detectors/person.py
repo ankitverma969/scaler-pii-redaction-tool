@@ -14,7 +14,7 @@ from app.models.entities import DetectedEntity, PIIType
 
 class PersonDetector:
     _context_pattern = re.compile(
-        r"\b(?:Contact\s+Person|Promoters?|Director|Managing\s+Director|"
+        r"\b(?:Contact\s+Person|Promoters?(?=\s*(?::|-))|Director(?!\s+General)|Managing\s+Director|"
         r"Joint\s+Managing\s+Director|Whole-time\s+Director|Independent\s+Director|"
         r"Executive\s+Director|Company\s+Secretary|Compliance\s+Officer|"
         r"Chief\s+Executive\s+Officer|Chief\s+Financial\s+Officer|CEO|CFO|"
@@ -47,6 +47,7 @@ class PersonDetector:
             start, end = trim_span(text, ent.start_char, ent.end_char)
             if start >= end:
                 continue
+            start, end = self._trim_trailing_non_name_words(text, start, end)
             candidate = text[start:end]
             if is_false_person(candidate) or not is_name_like(candidate):
                 continue
@@ -86,6 +87,7 @@ class PersonDetector:
                 end = tail_start + name_match.end()
                 if self._has_bad_prefix_between(text[tail_start:start]):
                     continue
+                start, end = self._trim_trailing_non_name_words(text, start, end)
                 candidate = text[start:end]
                 if is_name_like(candidate):
                     entities.append(
@@ -103,6 +105,22 @@ class PersonDetector:
     @staticmethod
     def _has_bad_prefix_between(value: str) -> bool:
         return bool(re.search(r"\b(?:Email|Telephone|Tel|Phone|Website|Address)\b", value, re.I))
+
+    @staticmethod
+    def _trim_trailing_non_name_words(text: str, start: int, end: int) -> tuple[int, int]:
+        candidate = text[start:end]
+        trimmed = re.sub(
+            r"\s+\b(?:Company|Secretary|Compliance|Officer|Director|Chairman|"
+            r"Website|Email|E-mail|Telephone|Tel|Phone|Mobile|Address)\b"
+            r"(?:\s+\b(?:Company|Secretary|Compliance|Officer|Director|Chairman|"
+            r"Website|Email|E-mail|Telephone|Tel|Phone|Mobile|Address)\b)*$",
+            "",
+            candidate,
+            flags=re.IGNORECASE,
+        )
+        if trimmed != candidate and len(trimmed.split()) >= 2:
+            end = start + len(trimmed)
+        return start, end
 
 
 def _dedupe_and_sort(entities: list[DetectedEntity]) -> list[DetectedEntity]:

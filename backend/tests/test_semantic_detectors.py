@@ -80,6 +80,31 @@ def test_person_context_handles_uppercase_names_without_role_text() -> None:
     assert [entity.text for entity in entities] == ["RAHUL MEHTA"]
 
 
+def test_person_context_rejects_promoter_and_director_corporate_phrases() -> None:
+    text = (
+        "The Promoter Selling Shareholders confirmed the offer details. "
+        "Approvals were obtained from the Director General of Foreign Trade."
+    )
+
+    assert PersonDetector().detect(text) == []
+
+
+def test_person_context_trims_following_contact_field_labels() -> None:
+    text = "Contact Person: Meera Desai Website: www.example.com Email: meera@example.com"
+
+    entities = PersonDetector().detect(text)
+
+    assert [entity.text for entity in entities] == ["Meera Desai"]
+
+
+def test_person_spacy_span_trims_trailing_role_words() -> None:
+    text = "Rahul Mehta Company Secretary and Compliance Officer"
+
+    entities = PersonDetector().detect(text)
+
+    assert [entity.text for entity in entities] == ["Rahul Mehta"]
+
+
 def test_person_role_titles_are_not_included() -> None:
     text = "Contact Person: Rahul Mehta, Company Secretary"
 
@@ -102,7 +127,9 @@ def test_person_negative_domain_phrases() -> None:
 def test_person_negative_financial_and_governance_headings() -> None:
     text = (
         "Financial Statements. Independent Auditor Report. "
-        "Corporate Social Responsibility Committee. Material Contracts."
+        "Corporate Social Responsibility Committee. Material Contracts. "
+        "Reference Rate. Manufacturing Facility. Mutual Funds. "
+        "Share Transfer Agents. QIB Bidders. Taluka-Khed."
     )
 
     assert PersonDetector().detect(text) == []
@@ -133,6 +160,28 @@ def test_company_detects_complete_span_with_punctuation() -> None:
     assert [entity.text for entity in entities] == ["Example Wealth Management Limited"]
 
 
+def test_company_legal_suffix_keeps_connector_words_in_span() -> None:
+    text = (
+        "Kanj and Co LLP reviewed the filing. "
+        "National Stock Exchange of India Limited approved the listing."
+    )
+
+    entities = CompanyDetector().detect(text)
+
+    assert [entity.text for entity in entities] == [
+        "Kanj and Co LLP",
+        "National Stock Exchange of India Limited",
+    ]
+
+
+def test_company_legal_suffix_detects_uppercase_legal_names() -> None:
+    text = "WATERLOO INDUSTRIAL PARK VI PRIVATE LIMITED"
+
+    entities = CompanyDetector().detect(text)
+
+    assert [entity.text for entity in entities] == [text]
+
+
 def test_company_negative_regulators_and_committees() -> None:
     text = (
         "Board of Directors. Audit Committee. Government of India. "
@@ -146,7 +195,10 @@ def test_company_negative_regulators_and_committees() -> None:
 def test_company_rejects_act_and_regulation_phrases_with_company_words() -> None:
     text = (
         "Companies Act, 2013. Securities Contracts Regulation Act. "
-        "The company law committee reviewed the draft."
+        "The company law committee reviewed the draft. "
+        "Securities Transaction Tax. Key Management Personnel. "
+        "Education Management Information System. Bank Balances. "
+        "Private Final Consumption Expenditure. Short Term Bank Facilities."
     )
 
     assert CompanyDetector().detect(text) == []
@@ -186,7 +238,27 @@ def test_address_plot_and_multiline_formats() -> None:
 def test_address_negative_standalone_locations() -> None:
     text = (
         "The company operates in Pune. Sales increased in Maharashtra. "
-        "The products are exported from India. Government of Maharashtra issued approval."
+        "The products are exported from India. Government of Maharashtra issued approval. "
+        "The regional office is located near a power sector project."
+    )
+
+    assert AddressDetector().detect(text) == []
+
+
+def test_address_rejects_registered_office_prose_without_physical_address() -> None:
+    text = (
+        "The registered office is located in Maharashtra, where notices are published. "
+        "A copy was filed with the registrar at its office under the Companies Act."
+    )
+
+    assert AddressDetector().detect(text) == []
+
+
+def test_address_rejects_registration_numbers_and_long_facility_prose() -> None:
+    text = (
+        "The independent engineer bearing registration number M-140388 certified the project. "
+        "Our manufacturing facility at Supa, Ahilyanagar in Maharashtra, of which phase I is "
+        "operational, is discussed with broader business risks and timing assumptions."
     )
 
     assert AddressDetector().detect(text) == []

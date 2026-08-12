@@ -15,6 +15,20 @@ FALSE_PERSON_PHRASES = {
     "corporate governance",
     "financial statements",
     "risk management committee",
+    "reference rate",
+    "selling shareholders",
+    "promoter selling shareholders",
+    "statutory disclosures",
+    "our management",
+    "foreign trade",
+    "absolute responsibility",
+    "average cost of acquisition",
+    "mutual funds",
+    "promoter trusts",
+    "share transfer agents",
+    "qib bidders",
+    "taluka khed",
+    "executive directors",
 }
 
 FALSE_COMPANY_PHRASES = {
@@ -31,6 +45,16 @@ FALSE_COMPANY_PHRASES = {
     "reserve bank of india",
     "stock exchanges",
     "qualified institutional buyers",
+    "securities contracts regulation rules",
+    "securities transaction tax",
+    "key management personnel",
+    "education management information system",
+    "refund bank",
+    "public offer account bank",
+    "sponsor banks",
+    "bank balances",
+    "private final consumption expenditure",
+    "short term bank facilities",
 }
 
 GENERIC_DOMAIN_TERMS = {
@@ -42,6 +66,21 @@ GENERIC_DOMAIN_TERMS = {
     "equity shares",
     "risk factors",
     "financial statements",
+    "shareholders",
+    "disclosures",
+    "facility",
+    "funds",
+    "trusts",
+    "branch",
+    "rate",
+    "responsibility",
+    "acquisition",
+    "foreign trade",
+    "management",
+    "agents",
+    "bidders",
+    "taluka",
+    "website",
 }
 
 ROLE_STOP_PATTERN = re.compile(
@@ -52,7 +91,8 @@ ROLE_STOP_PATTERN = re.compile(
 
 
 def normalize_phrase(value: str) -> str:
-    return re.sub(r"\s+", " ", value.strip(" \t\r\n,;:.()[]{}")).lower()
+    normalized = re.sub(r"\s+", " ", value.strip(" \t\r\n,;:.()[]{}")).lower()
+    return re.sub(r"^(?:the|a|an|our)\s+", "", normalized)
 
 
 def trim_span(text: str, start: int, end: int) -> tuple[int, int]:
@@ -74,7 +114,22 @@ def is_false_company(value: str) -> bool:
     normalized = normalize_phrase(value)
     if normalized in FALSE_COMPANY_PHRASES:
         return True
-    return normalized.endswith(" committee") or normalized.startswith("committee ")
+    return (
+        normalized.endswith(" committee")
+        or normalized.startswith("committee ")
+        or normalized.endswith(" rules")
+        or normalized.endswith(" tax")
+        or normalized.endswith(" branch")
+        or normalized.endswith(" balances")
+        or normalized.endswith(" facilities")
+        or normalized.endswith(" expenditure")
+        or " vendor" in normalized
+        or "securities and exchange board" in normalized
+        or "foreign exchange management" in normalized
+        or "finance department" in normalized
+        or "management personnel" in normalized
+        or normalized.endswith("information system")
+    )
 
 
 def is_name_like(value: str) -> bool:
