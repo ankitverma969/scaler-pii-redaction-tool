@@ -379,6 +379,63 @@ def test_semantic_table_detection() -> None:
     assert PIIType.ADDRESS in types(detector.detect(table_blocks[2].text))
 
 
+def test_person_rejects_technical_label_ending_in_number() -> None:
+    """'Invalid Luhn Number' must not be classified as a PERSON entity."""
+    text = "Invalid Luhn Number: 4111 1111 1111 1112"
+
+    entities = PersonDetector().detect(text)
+
+    assert not any(
+        entity.text == "Invalid Luhn Number" for entity in entities
+    ), "Technical label 'Invalid Luhn Number' must not be detected as PERSON"
+
+
+def test_person_rejects_reference_number_label() -> None:
+    """'Reference Number' must not be classified as a PERSON entity."""
+    text = "Reference Number: TXN-20240812-001"
+
+    entities = PersonDetector().detect(text)
+
+    assert not any(
+        entity.text == "Reference Number" for entity in entities
+    ), "Technical label 'Reference Number' must not be detected as PERSON"
+
+
+def test_person_rejects_registration_number_label() -> None:
+    """'Registration Number' must not be classified as a PERSON entity."""
+    text = "Registration Number: M-140388"
+
+    entities = PersonDetector().detect(text)
+
+    assert not any(
+        entity.text == "Registration Number" for entity in entities
+    ), "Technical label 'Registration Number' must not be detected as PERSON"
+
+
+def test_person_detects_name_after_contact_person_label() -> None:
+    """'Contact Person: Aarav Mehta' — Aarav Mehta must be detected as PERSON."""
+    text = "Contact Person: Aarav Mehta"
+
+    entities = PersonDetector().detect(text)
+
+    assert any(
+        entity.text == "Aarav Mehta" and entity.pii_type == PIIType.PERSON
+        for entity in entities
+    ), "Valid name 'Aarav Mehta' after 'Contact Person:' must be detected as PERSON"
+
+
+def test_person_detects_name_after_director_label() -> None:
+    """'Director: Priya Nair' — Priya Nair must be detected as PERSON."""
+    text = "Director: Priya Nair"
+
+    entities = PersonDetector().detect(text)
+
+    assert any(
+        entity.text == "Priya Nair" and entity.pii_type == PIIType.PERSON
+        for entity in entities
+    ), "Valid name 'Priya Nair' after 'Director:' must be detected as PERSON"
+
+
 def test_semantic_shared_header_detection_once() -> None:
     document = Document()
     document.sections[0].header.paragraphs[0].text = "Company: Summit Bank Limited"

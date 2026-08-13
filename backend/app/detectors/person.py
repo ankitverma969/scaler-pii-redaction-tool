@@ -25,6 +25,10 @@ class PersonDetector:
     _name_pattern = re.compile(
         r"\b(?:[A-Z][A-Za-z']+|[A-Z]\.)(?:\s+(?:[A-Z][A-Za-z']+|[A-Z]\.)){1,4}\b"
     )
+    _TECHNICAL_SUFFIX_PATTERN = re.compile(
+        r"^\s*(?:number|id|code|reference|registration|certificate|application|account)s?\b",
+        re.IGNORECASE,
+    )
 
     def __init__(self, spacy_provider: SpacyProvider | None = None) -> None:
         self.spacy_provider = spacy_provider or SpacyProvider()
@@ -50,6 +54,13 @@ class PersonDetector:
             start, end = self._trim_trailing_non_name_words(text, start, end)
             candidate = text[start:end]
             if is_false_person(candidate) or not is_name_like(candidate):
+                continue
+            # Reject if the word immediately following the candidate is a
+            # technical keyword (e.g. "Invalid Luhn [Number]: …").
+            # This handles the case where spaCy omits the trailing keyword from
+            # its PERSON span but the keyword clearly identifies a label.
+            suffix = text[end : end + 20]
+            if self._TECHNICAL_SUFFIX_PATTERN.match(suffix):
                 continue
             entities.append(
                 DetectedEntity(

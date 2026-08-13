@@ -2,7 +2,7 @@
   "real_rhp_evaluation": {
     "kind": "real_rhp",
     "metadata": {
-      "detector_source_fingerprint_sha256": "40426f33ccd1824ec66fa3bc9503fdb7b7334b5f5b7f85fb4ac30f7af7235133",
+      "detector_source_fingerprint_sha256": "f8c84834b957d7a1e1fb6c34c7675b0763fd52aa9680ca66d2f51dc97a9f51bd",
       "matching_policy": "strict exact [start,end) span plus exact PII type",
       "python_version": "3.11.9",
       "sample_size": 150,
@@ -13,7 +13,7 @@
       },
       "spacy_model": "en_core_web_sm",
       "spacy_version": "3.8.14",
-      "timestamp_utc": "2026-08-12T23:10:44.888612+00:00"
+      "timestamp_utc": "2026-08-13T00:11:07.119505+00:00"
     },
     "metrics": {
       "candidate_accuracy": {
@@ -163,7 +163,7 @@
   "synthetic_capability_evaluation": {
     "kind": "synthetic_capability",
     "metadata": {
-      "detector_source_fingerprint_sha256": "40426f33ccd1824ec66fa3bc9503fdb7b7334b5f5b7f85fb4ac30f7af7235133",
+      "detector_source_fingerprint_sha256": "f8c84834b957d7a1e1fb6c34c7675b0763fd52aa9680ca66d2f51dc97a9f51bd",
       "matching_policy": "strict exact [start,end) span plus exact PII type",
       "python_version": "3.11.9",
       "sample_size": 20,
@@ -171,7 +171,7 @@
       "source_type_distribution": {},
       "spacy_model": "en_core_web_sm",
       "spacy_version": "3.8.14",
-      "timestamp_utc": "2026-08-12T23:10:45.037663+00:00"
+      "timestamp_utc": "2026-08-13T00:11:07.260853+00:00"
     },
     "metrics": {
       "candidate_accuracy": {

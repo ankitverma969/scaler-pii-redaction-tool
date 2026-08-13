@@ -107,6 +107,8 @@ def is_false_person(value: str) -> bool:
     normalized = normalize_phrase(value)
     if normalized in FALSE_PERSON_PHRASES:
         return True
+    if re.search(r"\b(?:number|id|code|reference|registration|certificate|application|account)s?$", normalized):
+        return True
     return any(term == normalized or term in normalized for term in GENERIC_DOMAIN_TERMS)
 
 
